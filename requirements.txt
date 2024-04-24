@@ -3,3 +3,7 @@ openpyxl
 tqdm
 matplotlib
 datasets
+transformers
+sentencepiece
+protobuf
+jinja2
