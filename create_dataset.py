@@ -46,13 +46,16 @@ def use_tokenizer_chat_template(tokenizer, instruction: str, output: str) -> str
         chat = [
             {"role": "user", "content": instruction}
         ]
+        text = tokenizer.apply_chat_template(chat, tokenize=False)
     # train or valid
     else:
         chat = [
             {"role": "user", "content": instruction},
             {"role": "assistant", "content": output},
         ]
-    return tokenizer.apply_chat_template(chat, tokenize=False)
+        text = tokenizer.apply_chat_template(chat, tokenize=False)
+        text += tokenizer.eos_token
+    return text
 
 
 def main(args):
@@ -98,6 +101,7 @@ def main(args):
     df = pd.read_excel(test_path)
     test_data: list[Data] = []
     for i in range(0, len(df)):
+        id = preprocess_text(df['題號'][i])
         document = preprocess_text(df['文章'][i])
         question = preprocess_text(df['問題'][i])
         item1 = preprocess_text(df['選項1'][i])
@@ -106,7 +110,7 @@ def main(args):
         item4 = preprocess_text(df['選項4'][i])
         instruction = f'{INSTRUCTION_START};說明:{document};問題:{question}1:{item1},2:{item2},3:{item3},4:{item4}'
         test_data.append(Data(
-            id=str(i),
+            id=id,
             instruction=instruction,
             output="-1",
             text=preprocess_text(use_tokenizer_chat_template(
