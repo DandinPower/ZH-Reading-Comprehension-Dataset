@@ -33,6 +33,11 @@ def preprocess_text(text) -> str:
     return text
 
 
+def preprocess_output_text(text: str) -> str:
+    text = text.replace('選項', '')
+    return text
+
+
 def write_tsv(data: list[Data], path: str):
     with open(path, 'w', encoding='utf-8') as f:
         f.write('id\tinstruction\toutput\ttext\n')
@@ -79,7 +84,7 @@ def main(args):
         item2 = preprocess_text(df['選項2'][i])
         item3 = preprocess_text(df['選項3'][i])
         item4 = preprocess_text(df['選項4'][i])
-        answer = preprocess_text(df['正確答案'][i])
+        answer = preprocess_output_text(preprocess_text(df['正確答案'][i]))
         instruction = f'{INSTRUCTION_START};說明:{document};問題:{question}1:{item1},2:{item2},3:{item3},4:{item4}'
         original_train_data.append(Data(
             id=str(i),
