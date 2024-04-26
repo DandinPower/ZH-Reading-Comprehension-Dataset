@@ -107,7 +107,7 @@ class GemmaTextProcessor(TextProcessor):
                 {"role": "user", "content": instruction}
             ]
             text = self.tokenizer.apply_chat_template(chat, tokenize=False)
-            text += "<end_of_turn><start_of_turn>model"
+            text += "<start_of_turn>model"
         # train or valid
         else:
             chat = [
@@ -119,6 +119,27 @@ class GemmaTextProcessor(TextProcessor):
         return self.preprocess_text(text)
 
 
+class TAIDETextProcessor(TextProcessor):
+    def __init__(self, tokenizer):
+        self.tokenizer = tokenizer
+
+    def use_tokenizer_chat_template(self, instruction: str, output: str) -> str:
+        # test
+        if output == "-1":
+            chat = [
+                {"role": "user", "content": instruction}
+            ]
+            text = self.tokenizer.apply_chat_template(chat, tokenize=False)
+        # train or valid
+        else:
+            chat = [
+                {"role": "user", "content": instruction},
+                {"role": "assistant", "content": output},
+            ]
+            text = self.tokenizer.apply_chat_template(chat, tokenize=False)
+        return self.preprocess_text(text)
+
+
 def get_text_processor(tokenizer, tokenizer_name) -> TextProcessor:
     if tokenizer_name == "meta-llama/Meta-Llama-3-8B-Instruct":
         return LlamaTextProcessor(tokenizer)
@@ -126,6 +147,10 @@ def get_text_processor(tokenizer, tokenizer_name) -> TextProcessor:
         return BreezeTextProcessor(tokenizer)
     elif tokenizer_name == "google/gemma-1.1-7b-it":
         return GemmaTextProcessor(tokenizer)
+    elif tokenizer_name == "taide/TAIDE-LX-7B-Chat":
+        return TAIDETextProcessor(tokenizer)
+    elif tokenizer_name == "mistralai/Mistral-7B-Instruct-v0.2":
+        return TAIDETextProcessor(tokenizer)
     else:
         raise ValueError(f"Unknown tokenizer_name: {tokenizer_name}")
 
