@@ -9,8 +9,8 @@ TOKENIZER_NAME=MediaTek-Research/Breeze-7B-Instruct-v1_0
 # Available tokenizers:
 # 1. MediaTek-Research/Breeze-7B-Instruct-v1_0
 # 2. meta-llama/Meta-Llama-3-8B-Instruct
-# 3. taide/TAIDE-LX-7B-Chat
-# 4. google/gemma-1.1-7b-it
+# 3. taide/TAIDE-LX-7B-Chat # Not available yet
+# 4. google/gemma-1.1-7b-it # Not available yet
 
 rm -rf $OUTPUT_DIR
 

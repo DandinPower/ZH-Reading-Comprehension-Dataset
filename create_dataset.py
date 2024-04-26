@@ -93,7 +93,30 @@ class BreezeTextProcessor(TextProcessor):
             ]
             text = self.tokenizer.apply_chat_template(chat, tokenize=False)
             text += self.tokenizer.eos_token
-        return text
+        return self.preprocess_text(text)
+
+
+class GemmaTextProcessor(TextProcessor):
+    def __init__(self, tokenizer):
+        self.tokenizer = tokenizer
+
+    def use_tokenizer_chat_template(self, instruction: str, output: str) -> str:
+        # test
+        if output == "-1":
+            chat = [
+                {"role": "user", "content": instruction}
+            ]
+            text = self.tokenizer.apply_chat_template(chat, tokenize=False)
+            text += "<end_of_turn><start_of_turn>model"
+        # train or valid
+        else:
+            chat = [
+                {"role": "user", "content": instruction},
+                {"role": "assistant", "content": output},
+            ]
+            text = self.tokenizer.apply_chat_template(chat, tokenize=False)
+            text += self.tokenizer.eos_token
+        return self.preprocess_text(text)
 
 
 def get_text_processor(tokenizer, tokenizer_name) -> TextProcessor:
@@ -101,6 +124,8 @@ def get_text_processor(tokenizer, tokenizer_name) -> TextProcessor:
         return LlamaTextProcessor(tokenizer)
     elif tokenizer_name == "MediaTek-Research/Breeze-7B-Instruct-v1_0":
         return BreezeTextProcessor(tokenizer)
+    elif tokenizer_name == "google/gemma-1.1-7b-it":
+        return GemmaTextProcessor(tokenizer)
     else:
         raise ValueError(f"Unknown tokenizer_name: {tokenizer_name}")
 
