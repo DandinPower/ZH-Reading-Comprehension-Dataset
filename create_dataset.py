@@ -151,6 +151,8 @@ def get_text_processor(tokenizer, tokenizer_name) -> TextProcessor:
         return TAIDETextProcessor(tokenizer)
     elif tokenizer_name == "mistralai/Mistral-7B-Instruct-v0.2":
         return TAIDETextProcessor(tokenizer)
+    elif tokenizer_name == "yentinglin/Taiwan-LLM-7B-v2.1-chat":
+        return TAIDETextProcessor(tokenizer)
     else:
         raise ValueError(f"Unknown tokenizer_name: {tokenizer_name}")
 
