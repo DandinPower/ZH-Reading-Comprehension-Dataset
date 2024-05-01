@@ -140,6 +140,28 @@ class TAIDETextProcessor(TextProcessor):
         return self.preprocess_text(text)
 
 
+class TaiwanLLMTextProcessor(TextProcessor):
+    def __init__(self, tokenizer):
+        self.tokenizer = tokenizer
+
+    def use_tokenizer_chat_template(self, instruction: str, output: str) -> str:
+        # test
+        if output == "-1":
+            chat = [
+                {"role": "user", "content": instruction}
+            ]
+            text = self.tokenizer.apply_chat_template(chat, tokenize=False)
+            text += "ASSISTANT:"
+        # train or valid
+        else:
+            chat = [
+                {"role": "user", "content": instruction},
+                {"role": "assistant", "content": output},
+            ]
+            text = self.tokenizer.apply_chat_template(chat, tokenize=False)
+        return self.preprocess_text(text)
+
+
 def get_text_processor(tokenizer, tokenizer_name) -> TextProcessor:
     if tokenizer_name == "meta-llama/Meta-Llama-3-8B-Instruct":
         return LlamaTextProcessor(tokenizer)
@@ -152,7 +174,7 @@ def get_text_processor(tokenizer, tokenizer_name) -> TextProcessor:
     elif tokenizer_name == "mistralai/Mistral-7B-Instruct-v0.2":
         return TAIDETextProcessor(tokenizer)
     elif tokenizer_name == "yentinglin/Taiwan-LLM-7B-v2.1-chat":
-        return TAIDETextProcessor(tokenizer)
+        return TaiwanLLMTextProcessor(tokenizer)
     else:
         raise ValueError(f"Unknown tokenizer_name: {tokenizer_name}")
 
